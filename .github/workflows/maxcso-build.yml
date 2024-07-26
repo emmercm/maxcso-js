@@ -63,7 +63,7 @@ jobs:
       - run: |
           docker run --rm \
             --platform "linux/${DOCKER_ARCH}" \
-            --volume "$(pwd):/build \
+            --volume "$(pwd):/build" \
             --workdir "/build" \
             ubuntu:latest
             ./build.sh
