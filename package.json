@@ -1,12 +1,14 @@
 {
   "name": "maxcso",
-  "version": "0.0.1",
+  "version": "0.1130.0",
   "description": "💿 maxcso binaries and wrapper for Node.js.",
   "keywords": [
     "cso",
+    "dax",
     "isos",
     "maxcso",
-    "roms"
+    "roms",
+    "zso"
   ],
   "homepage": "https://github.com/emmercm/maxcso-js",
   "bugs": {
@@ -46,8 +48,20 @@
     "bump:patch": "npm version patch --no-git-tag-version",
     "prepack": "npm run build"
   },
+  "dependencies": {
+    "which": "^4.0.0"
+  },
   "devDependencies": {
-    "eslint": "^9.7.0",
+    "@types/jest": "^29.5.12",
+    "@types/which": "^3.0.4",
+    "@typescript-eslint/eslint-plugin": "^7.17.0",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-plugin-jest": "^28.6.0",
+    "eslint-plugin-jsdoc": "^48.8.3",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unicorn": "^55.0.0",
+    "jest": "^29.7.0",
     "ts-jest": "^29.2.3",
     "ts-node": "^10.9.2"
   },
