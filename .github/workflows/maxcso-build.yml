@@ -1,0 +1,100 @@
+name: maxcso Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      maxcso_ref:
+        description: 'maxcso GitHub branch, tag, or SHA (e.g. "v1.13.0")'
+        required: true
+        type: string
+      auto-merge:
+        description: 'Auto-merge pull request?'
+        required: true
+        type: boolean
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: unknownbrackets/maxcso
+          ref: ${{ env.MAME_REF }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev
+      - name: Build
+        run: make "-j$(nproc)"
+      - name: Strip binary
+        run: |
+          sudo apt-get install -y binutils
+          ls -al maxcso
+          strip maxcso
+          ls -al maxcso
+      - name: Rename binary
+        run: |
+          dir="artifacts/bin/linux/x64"
+          mkdir -p "${dir}"
+          mv maxcso "${dir}/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-x64-${{ github.sha }}
+          path: artifacts/**/maxcso
+          if-no-files-found: error
+
+  build-linux-cross:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          # https://github.com/uraimo/run-on-arch-action?tab=readme-ov-file#supported-platforms
+#          - arch: armv6
+#            distro: bookworm
+#            nodejs_arch:
+#          - arch: armv7
+#            distro: ubuntu_latest
+#            nodejs_arch:
+          - arch: aarch64
+            distro: ubuntu_latest
+            nodejs_arch: arm64
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: unknownbrackets/maxcso
+          ref: ${{ env.MAME_REF }}
+      - uses: uraimo/run-on-arch-action@v2
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+          githubToken: ${{ github.token }}
+          shell: /bin/sh
+          dockerRunArgs: |
+            --volume "${PWD}:/"
+          install: |
+            apt-get update
+            apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev
+          run: |
+            make "-j$(nproc)"
+
+            apt-get install -y binutils
+            ls -al maxcso
+            strip maxcso
+            ls -al maxcso
+
+            dir="artifacts/bin/linux/x64"
+            mkdir -p "${dir}"
+            mv maxcso "${dir}/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-${{ matrix.arch }}-${{ github.sha }}
+          path: artifacts/**/maxcso
+          if-no-files-found: error
