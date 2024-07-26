@@ -125,6 +125,13 @@ jobs:
     defaults:
       run:
         shell: msys2 {0}
+    strategy:
+      matrix:
+        include:
+          - platform: x64
+            nodejs_arch: x64
+          - platform: Win32
+            nodejs_arch: ia32
     steps:
       - uses: actions/checkout@v4
         with:
@@ -134,12 +141,22 @@ jobs:
       - uses: microsoft/setup-msbuild@v2
       - name: Build
         run: |
-          msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release /property:Platform=x64
+          msbuild.exe cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}"
       - name: Strip binary
         run: |
           ls -al maxcso.exe
           strip maxcso.exe
           ls -al maxcso.exe
+      - name: Rename binary
+        run: |
+          dir="artifacts/bin/win32/${{ matrix.nodejs_arch }}"
+          mkdir -p "${dir}"
+          mv maxcso.exe "${dir}/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-${{ matrix.platform }}-${{ github.sha }}
+          path: artifacts/**/maxcso.exe
+          if-no-files-found: error
 
   git-update:
     needs:
