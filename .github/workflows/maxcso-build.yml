@@ -25,7 +25,6 @@ jobs:
   build-linux:
     name: build-linux ${{ matrix.docker_arch }}
     strategy:
-      fail-fast: false
       matrix:
         include:
           - docker_image: i386/ubuntu:latest
@@ -130,7 +129,7 @@ jobs:
       - uses: microsoft/setup-msbuild@v2
       - name: Build
         run: |
-          msbuild cli/maxcso.sln
+          msbuild cli/maxcso.sln "/property:SolutionConfigurationPlatforms=Release|x64"
       - name: Strip binary
         run: |
           ls -al maxcso.exe
@@ -141,6 +140,7 @@ jobs:
     needs:
       - build-linux
       - build-macos
+      - build-windows
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
