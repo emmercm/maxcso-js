@@ -120,7 +120,7 @@ jobs:
           if-no-files-found: error
 
   build-windows:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - uses: actions/checkout@v4
         with:
@@ -129,7 +129,7 @@ jobs:
       - uses: microsoft/setup-msbuild@v2
       - name: Build
         run: |
-          msbuild cli/maxcso.sln "/property:SolutionConfigurationPlatforms=Release|x64"
+          msbuild cli/maxcso.sln /property:Configuration=Release /property:Platform=x64
       - name: Strip binary
         run: |
           ls -al maxcso.exe
