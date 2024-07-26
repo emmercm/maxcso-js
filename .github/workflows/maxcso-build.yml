@@ -123,7 +123,6 @@ jobs:
   build-windows:
     name: build-windows ${{ matrix.nodejs_arch }}
     strategy:
-      fail-fast: false
       matrix:
         include:
           - platform: x64
@@ -148,7 +147,7 @@ jobs:
 #          ls -al maxcso.exe
       - name: Rename binary
         run: |
-          $Dir = artifacts\bin\win32\${{ matrix.nodejs_arch }}
+          $Dir = "artifacts\bin\win32\${{ matrix.nodejs_arch }}"
           mkdir "$Dir"
           mv maxcso.exe "$Dir\"
       - uses: actions/upload-artifact@v4
