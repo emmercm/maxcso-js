@@ -16,7 +16,6 @@ on:
         required: true
         type: boolean
         default: true
-  push:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
