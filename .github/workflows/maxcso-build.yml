@@ -56,6 +56,9 @@ jobs:
             echo "sudo apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev"
             echo "make -j$(nproc)"
 
+            echo "file maxcso"
+            echo "./maxcso"
+
             echo "sudo apt-get install -y binutils"
             echo "ls -al maxcso"
             echo "strip maxcso"
