@@ -140,6 +140,7 @@ jobs:
       - name: Build
         run: |
           msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}"
+          dir /q
 #      - name: Strip binary
 #        run: |
 #          ls -al maxcso.exe
