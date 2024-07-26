@@ -23,7 +23,6 @@ permissions:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
     name: build-linux ${{ matrix.docker_arch }}
     strategy:
       fail-fast: false
@@ -41,6 +40,7 @@ jobs:
           - docker_image: ubuntu:latest
             docker_arch: linux/arm64/v8
             nodejs_arch: arm64v8
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,9 +55,7 @@ jobs:
             echo "sudo apt-get update"
             echo "sudo apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev"
             echo "make -j$(nproc)"
-
             echo "file maxcso"
-            echo "./maxcso"
 
             echo "sudo apt-get install -y binutils"
             echo "ls -al maxcso"
@@ -86,9 +84,46 @@ jobs:
           path: artifacts/**/maxcso
           if-no-files-found: error
 
+  build-macos:
+    strategy:
+      matrix:
+        include:
+          - os: macos-13
+            nodejs_arch: x64
+          - os: macos-14
+            nodejs_arch: arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: unknownbrackets/maxcso
+          ref: ${{ env.MAME_REF }}
+      - name: Install dependencies
+        run: brew install --overwrite lz4 libuv libdeflate
+      - name: Build
+        run: |
+          make "-j$(sysctl -n hw.physicalcpu)"
+          file maxcso
+      - name: Strip binary
+        run: |
+          ls -al maxcso
+          strip maxcso
+          ls -al maxcso
+      - name: Rename binary
+        run: |
+          dir="artifacts/bin/darwin/${{ matrix.nodejs_arch }}"
+          mkdir -p "${dir}"
+          mv maxcso "${dir}/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-${{ matrix.nodejs_arch }}-${{ github.sha }}
+          path: artifacts/**/maxcso
+          if-no-files-found: error
+
   git-update:
     needs:
       - build-linux
+      - build-macos
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
