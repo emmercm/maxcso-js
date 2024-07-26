@@ -70,22 +70,9 @@ jobs:
 
       # Test running
       - run: |
-          echo "TODO"
-
-  node-e2e:
-    needs:
-      - path-filter
-    if: ${{ needs.path-filter.outputs.changes == 'true' }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, macos-13, macos-14, windows-latest ]
-    steps:
-      # Setup and install
-      - uses: actions/checkout@v4
-      - uses: volta-cli/action@v4
-      - run: npm ci
-      # Test
+          npm start -- --format=cso1 test/fixtures/2048.bin -o 2048.cso
+          npm start -- --crc 2048.cso
+          npm start -- --decompress 2048.cso -o 2048.iso
 
   # !!! This check should be required by GitHub !!!
   test-status-check:

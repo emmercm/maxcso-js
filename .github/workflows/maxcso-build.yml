@@ -35,7 +35,7 @@ jobs:
             nodejs_arch: ia32
           - docker_image: ubuntu:latest
             docker_arch: linux/amd64
-            nodejs_arch: amd64
+            nodejs_arch: x64
           - docker_image: ubuntu:latest
             docker_arch: linux/arm/v7
             nodejs_arch: armv7
