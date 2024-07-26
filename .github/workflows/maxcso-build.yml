@@ -25,6 +25,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - docker_image: i386/ubuntu:latest
