@@ -121,7 +121,7 @@ jobs:
           if-no-files-found: error
 
   build-windows:
-    name: build-macos ${{ matrix.nodejs_arch }}
+    name: build-windows ${{ matrix.nodejs_arch }}
     strategy:
       fail-fast: false
       matrix:
@@ -148,9 +148,9 @@ jobs:
 #          ls -al maxcso.exe
       - name: Rename binary
         run: |
-          set dir=artifacts\bin\win32\${{ matrix.nodejs_arch }}
-          mkdir "%dir%"
-          mv maxcso.exe "%dir%\"
+          $Dir = artifacts\bin\win32\${{ matrix.nodejs_arch }}
+          mkdir "$Dir"
+          mv maxcso.exe "$Dir\"
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-${{ matrix.platform }}-${{ github.sha }}
