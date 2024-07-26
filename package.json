@@ -1,0 +1,68 @@
+{
+  "name": "maxcso",
+  "version": "0.0.1",
+  "description": "💿 maxcso binaries and wrapper for Node.js.",
+  "keywords": [
+    "cso",
+    "isos",
+    "maxcso",
+    "roms"
+  ],
+  "homepage": "https://github.com/emmercm/maxcso-js",
+  "bugs": {
+    "url": "https://github.com/emmercm/maxcso-js/issues"
+  },
+  "license": "GPL-3.0-or-later",
+  "author": "Christian Emmer",
+  "funding": "https://github.com/sponsors/emmercm",
+  "type": "module",
+  "files": [
+    "dist",
+    "!**/test/**",
+    "!**/*.test.*",
+    "!**/jest.*",
+    "bin"
+  ],
+  "main": "dist/index.js",
+  "bin": {
+    "maxcso": "dist/src/bin.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emmercm/maxcso-js.git"
+  },
+  "scripts": {
+    "start": "node --loader ts-node/esm src/bin.ts",
+    "build": "tsc && node --eval \"if(process.platform!=='win32'){process.exit(1);}\" || chmod +x dist/index.js",
+    "package": "npm run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "npm run test:unit && npm run lint",
+    "test:unit": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --verbose",
+    "test:coverage": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --verbose --coverage",
+    "test:handles": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --verbose --detectOpenHandles",
+    "bump:major": "npm version major --no-git-tag-version",
+    "bump:minor": "npm version minor --no-git-tag-version",
+    "bump:patch": "npm version patch --no-git-tag-version",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "eslint": "^9.7.0",
+    "ts-jest": "^29.2.3",
+    "ts-node": "^10.9.2"
+  },
+  "//engines": [
+    "Requires >=14.17.0 for TypeScript v5.1.",
+    "Requires ^12.20.0 || ^14.13.1 || >=16.0.0 for ES6 modules, even though `tsc` can target ES5 or lower.",
+    "Requires ^14.18.0 || >=16.0.0 for `node:` prefixed built-in modules that many dependencies use.",
+    "Requires >=15.0.0 for npm v7 for package-lock.json v3 because Renovate stopped respecting the existing version in August 2023.",
+    "Requires ^14.18.0 || >=16.3.0 for `os.devNull`.",
+    "Requires >=16.6.0 for `Array.prototype.at()`."
+  ],
+  "engines": {
+    "node": ">=16.6.0"
+  },
+  "volta": {
+    "node": "20.11.1"
+  }
+}

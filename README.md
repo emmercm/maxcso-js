@@ -1,2 +1,3 @@
 # maxcso-js
-💿 maxcso binaries and wrapper for Node.js. 
+
+💿 maxcso binaries and wrapper for Node.js.
