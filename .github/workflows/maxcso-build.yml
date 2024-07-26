@@ -44,8 +44,7 @@ jobs:
         with:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAME_REF }}
-      - if: matrix.os == 'ubuntu-latest'
-        uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-qemu-action@v3
       - run: |
           {
             echo "#!/usr/bin/env bash"
