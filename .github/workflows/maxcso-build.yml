@@ -24,6 +24,7 @@ permissions:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
+    name: build-linux ${{ matrix.docker_arch }}
     strategy:
       fail-fast: false
       matrix:
@@ -78,6 +79,16 @@ jobs:
           mv maxcso "${dir}/"
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ runner.os }}-${{ matrix.arch }}-${{ github.sha }}
+          name: ${{ runner.os }}-${{ matrix.nodejs_arch }}-${{ github.sha }}
           path: artifacts/**/maxcso
           if-no-files-found: error
+
+  git-update:
+    needs:
+      - build-linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
