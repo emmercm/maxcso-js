@@ -79,11 +79,13 @@ jobs:
           githubToken: ${{ github.token }}
           shell: /bin/sh
           dockerRunArgs: |
-            --volume "${PWD}:/"
+            --volume "${PWD}:/build"
           install: |
             apt-get update
             apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev
           run: |
+            cd /build
+
             make "-j$(nproc)"
 
             apt-get install -y binutils
