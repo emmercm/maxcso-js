@@ -41,9 +41,11 @@ describe.each(
       return;
     }
 
-    test.each(
+    test.each([
       [path.join('test', 'fixtures', '2048.bin')],
-    )('should compress with format: %s', async (filePath) => {
+      [path.join('test', 'fixtures', '4096.bin')],
+      [path.join('test', 'fixtures', '6144.bin')],
+    ])('should compress with format: %s', async (filePath) => {
       const temporaryCso = `${await TestUtil.mktemp(path.join(os.tmpdir(), path.basename(filePath)))}.${formatValue}`;
       const temporaryRaw = await TestUtil.mktemp(path.join(os.tmpdir(), path.parse(filePath).name));
 
