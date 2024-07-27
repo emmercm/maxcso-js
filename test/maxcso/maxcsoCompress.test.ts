@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import MaxcsoCompress, { CompressFormat, CompressMethod } from '../../src/maxcso/maxcsoCompress.js';
 import TestUtil from '../testUtil.js';
 import MaxcsoDecompress from '../../src/maxcso/maxcsoDecompress.js';
+import MaxcsoInfo from '../../src/maxcso/maxcsoInfo.js';
 
 it('should fail on nonexistent file', async () => {
   const temporaryCso = `${await TestUtil.mktemp(path.join(os.tmpdir(), 'dummy'))}.cso`;
@@ -42,10 +43,10 @@ describe.each(
     }
 
     test.each([
-      [path.join('test', 'fixtures', '2048.bin')],
-      [path.join('test', 'fixtures', '4096.bin')],
-      [path.join('test', 'fixtures', '6144.bin')],
-    ])('should compress with format: %s', async (filePath) => {
+      [path.join('test', 'fixtures', '2048.bin'), 2048],
+      [path.join('test', 'fixtures', '4096.bin'), 4096],
+      [path.join('test', 'fixtures', '6144.bin'), 6144],
+    ])('should compress with format: %s', async (filePath, expectedSize) => {
       const temporaryCso = `${await TestUtil.mktemp(path.join(os.tmpdir(), path.basename(filePath)))}.${formatValue}`;
       const temporaryRaw = await TestUtil.mktemp(path.join(os.tmpdir(), path.parse(filePath).name));
 
@@ -64,6 +65,7 @@ describe.each(
         });
         await expect(TestUtil.exists(temporaryRaw)).resolves.toEqual(true);
 
+        await expect(MaxcsoInfo.uncompressedSize(temporaryRaw)).resolves.toEqual(expectedSize);
         await expect(TestUtil.equals(filePath, temporaryRaw)).resolves.toEqual(true);
       } finally {
         await promisify(fs.rm)(temporaryCso, { force: true });
