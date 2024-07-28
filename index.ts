@@ -12,7 +12,7 @@ export default {
   run: MaxcsoBin.run,
 
   uncompressedCrc32: MaxcsoInfo.uncompressedCrc32,
-  uncompressedSize: MaxcsoInfo.uncompressedSize,
+  header: MaxcsoInfo.header,
 
   compress: MaxcsoCompress.compress,
 
