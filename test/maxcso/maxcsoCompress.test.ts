@@ -59,13 +59,14 @@ describe.each(
         });
         await expect(TestUtil.exists(temporaryCso)).resolves.toEqual(true);
 
+        const info = await MaxcsoInfo.header(temporaryCso);
+        expect(info.uncompressedSize).toEqual(BigInt(expectedSize));
+
         await MaxcsoDecompress.decompress({
           inputFilename: temporaryCso,
           outputFilename: temporaryRaw,
         });
         await expect(TestUtil.exists(temporaryRaw)).resolves.toEqual(true);
-
-        await expect(MaxcsoInfo.uncompressedSize(temporaryRaw)).resolves.toEqual(expectedSize);
         await expect(TestUtil.equals(filePath, temporaryRaw)).resolves.toEqual(true);
       } finally {
         await promisify(fs.rm)(temporaryCso, { force: true });

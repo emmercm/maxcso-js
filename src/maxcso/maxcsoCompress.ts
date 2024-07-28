@@ -48,7 +48,7 @@ export default {
     ]);
 
     try {
-      await MaxcsoInfo.uncompressedCrc32(options.outputFilename);
+      await MaxcsoInfo.header(options.outputFilename);
     } catch (error) {
       throw new Error(`created CSO is invalid: ${error}`);
     }
