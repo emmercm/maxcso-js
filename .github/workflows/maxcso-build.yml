@@ -38,10 +38,10 @@ jobs:
             nodejs_arch: x64
           - docker_image: ubuntu:latest
             docker_arch: linux/arm/v7
-            nodejs_arch: armv7
+            nodejs_arch: arm
           - docker_image: ubuntu:latest
             docker_arch: linux/arm64/v8
-            nodejs_arch: arm64v8
+            nodejs_arch: arm64
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
