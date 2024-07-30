@@ -20,8 +20,17 @@ export default {
    * Given a compressed CSO/ZSO/DAX file, get its uncompressed ISO's CRC32. This is fast/cheap to
    * calculate.
    */
-  async uncompressedCrc32(inputFilename: string): Promise<string> {
+  async uncompressedCrc32(inputFilename: string, attempt = 1): Promise<string> {
     const output = await MaxcsoBin.run(['--crc', inputFilename]);
+
+    // Try to detect failures, and then retry them automatically
+    if (!output.trim() && attempt < 5) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, Math.random() * (2 ** (attempt - 1) * 10));
+      });
+      return this.uncompressedCrc32(inputFilename, attempt + 1);
+    }
+
     const crcMatch = output.replace(/[\n\r]/g, '').match(/ ([\da-f]{8})$/);
     if (crcMatch === null) {
       throw new Error('failed to get CRC of uncompressed file');
