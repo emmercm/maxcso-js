@@ -80,7 +80,7 @@ export default class MaxcsoBin {
         chunks.push(chunk);
       });
 
-      proc.on('exit', (code) => {
+      proc.on('close', (code) => {
         const output = Buffer.concat(chunks).toString().trim();
         if (code !== null && code !== 0) {
           return reject(output);
