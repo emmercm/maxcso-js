@@ -38,9 +38,9 @@ jobs:
           - docker_image: ubuntu:latest
             docker_arch: linux/amd64
             nodejs_arch: x64
-          - docker_image: ubuntu:latest
-            docker_arch: linux/arm/v7
-            nodejs_arch: arm
+          #- docker_image: ubuntu:latest
+          #  docker_arch: linux/arm/v7
+          #  nodejs_arch: arm
           - docker_image: ubuntu:latest
             docker_arch: linux/arm64/v8
             nodejs_arch: arm64
@@ -51,7 +51,6 @@ jobs:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAME_REF }}
       - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v2
       - run: |
           {
             echo "#!/usr/bin/env bash"
