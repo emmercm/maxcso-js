@@ -68,18 +68,7 @@ jobs:
             echo "ls -al maxcso"
           } > "build.sh"
           chmod +x build.sh
-#      - uses: addnab/docker-run-action@v3
-#        with:
-#          image: ${{ matrix.docker_image }}
-#          options: |
-#            --platform ${{ matrix.docker_arch }}
-#            --volume ${{ github.workspace }}:/build
-#            --workdir /build
-#          run: ./build.sh
-#      - run: |
-#          file ${{ github.workspace }}/maxcso
       - run: |
-          docker pull --platform "${DOCKER_ARCH}" "${DOCKER_IMAGE}"
           docker run --rm \
             --platform "${DOCKER_ARCH}" \
             --volume "$(pwd):/build" \
