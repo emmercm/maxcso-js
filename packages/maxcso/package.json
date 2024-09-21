@@ -54,6 +54,8 @@
   "optionalDependencies": {
     "@emmercm/maxcso-darwin-arm64": "^0.1130.7",
     "@emmercm/maxcso-darwin-x64": "^0.1130.7",
+    "@emmercm/maxcso-linux-arm64": "^0.1130.7",
+    "@emmercm/maxcso-linux-ia32": "^0.1130.7",
     "@emmercm/maxcso-linux-x64": "^0.1130.7",
     "@emmercm/maxcso-win32-ia32": "^0.1130.7",
     "@emmercm/maxcso-win32-x64": "^0.1130.7"

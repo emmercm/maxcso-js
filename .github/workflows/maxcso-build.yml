@@ -31,18 +31,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #- docker_image: i386/ubuntu:latest
-          #  docker_arch: linux/386
-          #  nodejs_arch: ia32
+          - docker_image: i386/ubuntu:latest
+            docker_arch: linux/386
+            nodejs_arch: ia32
           - docker_image: ubuntu:latest
             docker_arch: linux/amd64
             nodejs_arch: x64
           #- docker_image: ubuntu:latest
           #  docker_arch: linux/arm/v7
           #  nodejs_arch: arm
-          #- docker_image: ubuntu:latest
-          #  docker_arch: linux/arm64/v8
-          #  nodejs_arch: arm64
+          - docker_image: ubuntu:latest
+            docker_arch: linux/arm64/v8
+            nodejs_arch: arm64
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,12 +55,11 @@ jobs:
             echo "#!/usr/bin/env bash"
             echo "set -euo pipefail"
 
-            echo "sudo apt-get update"
-            echo "sudo apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev"
+            echo "apt-get update"
+            echo "apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev"
             echo "make -j$(nproc)"
-            echo "file maxcso"
 
-            echo "sudo apt-get install -y binutils"
+            echo "apt-get install -y binutils"
             echo "ls -al maxcso"
             echo "strip maxcso"
             echo "ls -al maxcso"
@@ -71,8 +70,9 @@ jobs:
             --platform "${DOCKER_ARCH}" \
             --volume "$(pwd):/build" \
             --workdir "/build" \
-            "${DOCKER_IMAGE}"
+            "${DOCKER_IMAGE}" \
             ./build.sh
+          file maxcso
         env:
           DOCKER_IMAGE: ${{ matrix.docker_image }}
           DOCKER_ARCH: ${{ matrix.docker_arch }}
@@ -204,6 +204,8 @@ jobs:
           PACKAGE_VERSION="$(jq --raw-output '.version' package.json)"
           echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> "${GITHUB_OUTPUT}"
           git commit -m "v${PACKAGE_VERSION}"
+
+          exit 1
         env:
           GH_TOKEN: ${{ github.token }}
       # Create the pull request, and optionally mark it as auto-merge
