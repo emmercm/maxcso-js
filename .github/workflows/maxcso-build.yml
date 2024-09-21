@@ -72,7 +72,7 @@ jobs:
         with:
           image: ${{ matrix.docker_image }}
           options: |
-            --platform ${{ matrix.docker_image }}
+            --platform ${{ matrix.docker_arch }}
             --volume ${{ runner.temp }}:/build
             --workdir /build
           run: ./build.sh
