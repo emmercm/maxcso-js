@@ -73,11 +73,11 @@ jobs:
           image: ${{ matrix.docker_image }}
           options: |
             --platform ${{ matrix.docker_arch }}
-            --volume ${{ runner.temp }}:/build
+            --volume ${{ github.workspace }}:/build
             --workdir /build
           run: /build/build.sh
       - run: |
-          file ${{ runner.temp }}/maxcso
+          file ${{ github.workspace }}/maxcso
       - run: |
           docker pull --platform "${DOCKER_ARCH}" "${DOCKER_IMAGE}"
           docker run --rm \
