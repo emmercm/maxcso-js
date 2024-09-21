@@ -1,0 +1,92 @@
+{
+  "name": "maxcso",
+  "version": "0.1130.6",
+  "description": "💿 maxcso binaries and wrapper for Node.js.",
+  "keywords": [
+    "cso",
+    "dax",
+    "isos",
+    "maxcso",
+    "roms",
+    "zso"
+  ],
+  "homepage": "https://github.com/emmercm/maxcso-js",
+  "bugs": {
+    "url": "https://github.com/emmercm/maxcso-js/issues"
+  },
+  "license": "GPL-3.0-or-later",
+  "author": "Christian Emmer",
+  "funding": "https://github.com/sponsors/emmercm",
+  "type": "module",
+  "files": [
+    "dist",
+    "!**/test/**",
+    "!**/*.test.*",
+    "!**/jest.*",
+    "../../bin"
+  ],
+  "main": "dist/index.js",
+  "bin": {
+    "maxcso": "dist/src/bin.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emmercm/maxcso-js.git"
+  },
+  "scripts": {
+    "start": "node --loader ts-node/esm src/bin.ts",
+    "build": "../../node_modules/.bin/tsc && node --eval \"if(process.platform!=='win32'){process.exit(1);}\" || chmod +x dist/index.js",
+    "package": "npm run build",
+    "lint": "../../node_modules/.bin/eslint .",
+    "lint:fix": "../../node_modules/.bin/eslint . --fix",
+    "test": "npm run test:unit && npm run lint",
+    "test:unit": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --verbose",
+    "test:coverage": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --verbose --coverage",
+    "test:handles": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --verbose --detectOpenHandles",
+    "bump:major": "npm version major --no-git-tag-version",
+    "bump:minor": "npm version minor --no-git-tag-version",
+    "bump:patch": "npm version patch --no-git-tag-version",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "which": "^4.0.0"
+  },
+  "optionalDependencies": {
+    "@emmercm/maxcso-darwin-arm64": "0.1130.6",
+    "@emmercm/maxcso-darwin-x64": "0.1130.6",
+    "@emmercm/maxcso-linux-x64": "0.1130.6",
+    "@emmercm/maxcso-win32-ia32": "0.1130.6",
+    "@emmercm/maxcso-win32-x64": "0.1130.6"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.12",
+    "@types/which": "^3.0.4",
+    "@typescript-eslint/eslint-plugin": "^7.17.0",
+    "auto-changelog": "^2.4.0",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-plugin-jest": "^28.6.0",
+    "eslint-plugin-jsdoc": "^48.8.3",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unicorn": "^55.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  },
+  "//engines": [
+    "Requires >=14.17.0 for TypeScript v5.1.",
+    "Requires ^12.20.0 || ^14.13.1 || >=16.0.0 for ES6 modules, even though `tsc` can target ES5 or lower.",
+    "Requires ^14.18.0 || >=16.0.0 for `node:` prefixed built-in modules that many dependencies use.",
+    "Requires >=15.0.0 for npm v7 for package-lock.json v3 because Renovate stopped respecting the existing version in August 2023.",
+    "Requires ^14.18.0 || >=16.3.0 for `os.devNull`.",
+    "Requires >=16.6.0 for `Array.prototype.at()`."
+  ],
+  "engines": {
+    "node": ">=16.6.0"
+  },
+  "volta": {
+    "node": "20.11.1"
+  }
+}

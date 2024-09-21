@@ -1,0 +1,28 @@
+{
+  "name": "@emmercm/maxcso-darwin-arm64",
+  "version": "0.1130.6",
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "type": "module",
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo",
+    "maxcso"
+  ],
+  "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsc --build --verbose",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepack": "npm run build && cp -f ../../LICENSE ../../README.md ./",
+    "postpack": "rm ./LICENSE ./README.md"
+  }
+}

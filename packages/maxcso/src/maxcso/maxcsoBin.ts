@@ -34,12 +34,14 @@ export default class MaxcsoBin {
       return MaxcsoBin.MAXCSO_BIN;
     }
 
-    const rootDirectory = await this.findRoot() ?? process.cwd();
-    const prebuilt = path.join(rootDirectory, 'bin', process.platform, process.arch, `maxcso${process.platform === 'win32' ? '.exe' : ''}`);
-    if (await promisify(fs.exists)(prebuilt)) {
-      MaxcsoBin.MAXCSO_BIN = prebuilt;
-      return prebuilt;
-    }
+    try {
+      const maxcso = await import(`@emmercm/maxcso-${process.platform}-${process.arch}`);
+      const prebuilt = maxcso.default;
+      if (await promisify(fs.exists)(prebuilt)) {
+        MaxcsoBin.MAXCSO_BIN = prebuilt;
+        return prebuilt;
+      }
+    } catch { /* ignored */ }
 
     const resolved = await which('maxcso', { nothrow: true });
     if (resolved) {
