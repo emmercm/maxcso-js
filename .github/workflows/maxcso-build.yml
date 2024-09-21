@@ -68,6 +68,7 @@ jobs:
           } > "build.sh"
           chmod +x build.sh
       - run: |
+          docker pull --platform "${DOCKER_ARCH}" "${DOCKER_IMAGE}"
           docker run --rm \
             --platform "${DOCKER_ARCH}" \
             --volume "$(pwd):/build" \
