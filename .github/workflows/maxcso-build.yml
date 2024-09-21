@@ -58,7 +58,7 @@ jobs:
             echo "set -euo pipefail"
 
             echo "apt-get update"
-            echo "apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev"
+            echo "apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev file"
             echo "make -j$(nproc)"
             echo "file maxcso"
 
