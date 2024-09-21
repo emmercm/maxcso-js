@@ -1,6 +1,6 @@
 {
   "name": "@emmercm/maxcso-darwin-x64",
-  "version": "0.1130.6",
+  "version": "0.1130.7",
   "os": [
     "darwin"
   ],
@@ -23,5 +23,25 @@
     "lint:fix": "eslint . --fix",
     "prepack": "npm run build && cp -f ../../LICENSE ../../README.md ./",
     "postpack": "rm ./LICENSE ./README.md"
+  },
+  "description": "💿 maxcso binaries and wrapper for Node.js.",
+  "keywords": [
+    "cso",
+    "dax",
+    "isos",
+    "maxcso",
+    "roms",
+    "zso"
+  ],
+  "homepage": "https://github.com/emmercm/maxcso-js",
+  "bugs": {
+    "url": "https://github.com/emmercm/maxcso-js/issues"
+  },
+  "license": "GPL-3.0-or-later",
+  "author": "Christian Emmer",
+  "funding": "https://github.com/sponsors/emmercm",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emmercm/maxcso-js.git"
   }
 }
