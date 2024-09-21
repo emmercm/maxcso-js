@@ -1,0 +1,27 @@
+{
+  "name": "@emmercm/maxcso-win32-x64",
+  "version": "0.1130.6",
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "type": "module",
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
+  "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsc --build --verbose && cp maxcso* dist/",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepack": "npm run build && cp -f ../../LICENSE ../../README.md ./",
+    "postpack": "rm ./LICENSE ./README.md"
+  }
+}
