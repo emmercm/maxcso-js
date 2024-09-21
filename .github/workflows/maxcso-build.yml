@@ -57,34 +57,34 @@ jobs:
             echo "#!/usr/bin/env bash"
             echo "set -euo pipefail"
 
-            echo "sudo apt-get update"
-            echo "sudo apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev"
+            echo "apt-get update"
+            echo "apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev"
             echo "make -j$(nproc)"
             echo "file maxcso"
 
-            echo "sudo apt-get install -y binutils"
+            echo "apt-get install -y binutils"
             echo "ls -al maxcso"
             echo "strip maxcso"
             echo "ls -al maxcso"
           } > "build.sh"
           chmod +x build.sh
-      - uses: addnab/docker-run-action@v3
-        with:
-          image: ${{ matrix.docker_image }}
-          options: |
-            --platform ${{ matrix.docker_arch }}
-            --volume ${{ github.workspace }}:/build
-            --workdir /build
-          run: /build/build.sh
-      - run: |
-          file ${{ github.workspace }}/maxcso
+#      - uses: addnab/docker-run-action@v3
+#        with:
+#          image: ${{ matrix.docker_image }}
+#          options: |
+#            --platform ${{ matrix.docker_arch }}
+#            --volume ${{ github.workspace }}:/build
+#            --workdir /build
+#          run: ./build.sh
+#      - run: |
+#          file ${{ github.workspace }}/maxcso
       - run: |
           docker pull --platform "${DOCKER_ARCH}" "${DOCKER_IMAGE}"
           docker run --rm \
             --platform "${DOCKER_ARCH}" \
             --volume "$(pwd):/build" \
             --workdir "/build" \
-            "${DOCKER_IMAGE}"
+            "${DOCKER_IMAGE}" \
             ./build.sh
           file maxcso
         env:
