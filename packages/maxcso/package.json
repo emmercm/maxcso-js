@@ -35,10 +35,10 @@
   },
   "scripts": {
     "start": "node --loader ts-node/esm src/bin.ts",
-    "build": "../../node_modules/.bin/tsc && node --eval \"if(process.platform!=='win32'){process.exit(1);}\" || chmod +x dist/index.js",
+    "build": "tsc && node --eval \"if(process.platform!=='win32'){process.exit(1);}\" || chmod +x dist/index.js",
     "package": "npm run build",
-    "lint": "../../node_modules/.bin/eslint .",
-    "lint:fix": "../../node_modules/.bin/eslint . --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "npm run test:unit && npm run lint",
     "test:unit": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --verbose",
     "test:coverage": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --verbose --coverage",
