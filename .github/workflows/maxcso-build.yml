@@ -51,6 +51,7 @@ jobs:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAME_REF }}
       - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v2
       - run: |
           {
             echo "#!/usr/bin/env bash"
@@ -67,6 +68,18 @@ jobs:
             echo "ls -al maxcso"
           } > "build.sh"
           chmod +x build.sh
+          {
+          }
+      - uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ matrix.docker_image }}
+          options: |
+            --platform ${{ matrix.docker_image }}
+            --volume ${{ runner.temp }}:/build
+            --workdir /build
+          run: ./build.sh
+      - run: |
+          file ${{ runner.temp }}/maxcso
       - run: |
           docker pull --platform "${DOCKER_ARCH}" "${DOCKER_IMAGE}"
           docker run --rm \
