@@ -1,12 +1,16 @@
-import url from 'node:url';
-import path from 'node:path';
 import { promisify } from 'node:util';
 import fs from 'node:fs';
 import which from 'which';
 import * as child_process from 'node:child_process';
 
 export interface MaxcsoBinOptions {
+  binaryPreference?: MaxcsoBinaryPreference
   logStd?: boolean
+}
+
+export enum MaxcsoBinaryPreference {
+  PREFER_BUNDLED_BINARY = 1,
+  PREFER_PATH_BINARY,
 }
 
 /**
@@ -15,40 +19,43 @@ export interface MaxcsoBinOptions {
 export default class MaxcsoBin {
   private static MAXCSO_BIN: string | undefined;
 
-  private static async findRoot(filePath = url.fileURLToPath(new URL('.', import.meta.url))): Promise<string | undefined> {
-    const fullPath = path.join(filePath, 'package.json');
-    if (await promisify(fs.exists)(fullPath)) {
-      return filePath;
+  private static async getBinPath(
+    binaryPreference?: MaxcsoBinaryPreference,
+  ): Promise<string | undefined> {
+    if (this.MAXCSO_BIN) {
+      return this.MAXCSO_BIN;
     }
 
-    const parentPath = path.dirname(filePath);
-    if (parentPath !== filePath) {
-      return this.findRoot(path.dirname(filePath));
+    if ((binaryPreference ?? MaxcsoBinaryPreference.PREFER_BUNDLED_BINARY)
+      === MaxcsoBinaryPreference.PREFER_BUNDLED_BINARY
+    ) {
+      const pathBundled = await this.getBinPathBundled();
+      this.MAXCSO_BIN = pathBundled ?? (await this.getBinPathExisting());
+    } else {
+      const pathExisting = await this.getBinPathExisting();
+      this.MAXCSO_BIN = pathExisting ?? (await this.getBinPathBundled());
     }
+
+    return this.MAXCSO_BIN;
+  }
+
+  private static async getBinPathBundled(): Promise<string | undefined> {
+    // try {
+    const maxcso = await import(`@emmercm/maxcso-${process.platform}-${process.arch}`);
+    const prebuilt = maxcso.default;
+    if (await promisify(fs.exists)(prebuilt)) {
+      return prebuilt;
+    }
+    // } catch { /* ignored */ }
 
     return undefined;
   }
 
-  static async getBinPath(): Promise<string | undefined> {
-    if (MaxcsoBin.MAXCSO_BIN) {
-      return MaxcsoBin.MAXCSO_BIN;
-    }
-
-    try {
-      const maxcso = await import(`@emmercm/maxcso-${process.platform}-${process.arch}`);
-      const prebuilt = maxcso.default;
-      if (await promisify(fs.exists)(prebuilt)) {
-        MaxcsoBin.MAXCSO_BIN = prebuilt;
-        return prebuilt;
-      }
-    } catch { /* ignored */ }
-
+  private static async getBinPathExisting(): Promise<string | undefined> {
     const resolved = await which('maxcso', { nothrow: true });
     if (resolved) {
-      MaxcsoBin.MAXCSO_BIN = resolved;
       return resolved;
     }
-
     return undefined;
   }
 
@@ -56,7 +63,7 @@ export default class MaxcsoBin {
    * Run maxcso with some arguments.
    */
   static async run(arguments_: string[], options?: MaxcsoBinOptions): Promise<string> {
-    const maxcsoBin = await this.getBinPath();
+    const maxcsoBin = await this.getBinPath(options?.binaryPreference);
     if (!maxcsoBin) {
       throw new Error('maxcso not found');
     }

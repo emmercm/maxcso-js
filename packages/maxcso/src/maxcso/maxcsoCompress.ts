@@ -1,4 +1,4 @@
-import MaxcsoBin from './maxcsoBin.js';
+import MaxcsoBin, { MaxcsoBinOptions } from './maxcsoBin.js';
 import MaxcsoInfo from './maxcsoInfo.js';
 
 export enum CompressFormat {
@@ -17,7 +17,7 @@ export enum CompressMethod {
   LIBDEFLATE = 'libdeflate',
 }
 
-export interface CompressOptions {
+export interface CompressOptions extends MaxcsoBinOptions {
   inputFilename: string,
   outputFilename: string,
   threads?: number,
@@ -45,7 +45,7 @@ export default {
       ...(options.originalCost === undefined ? [] : [`--orig-cost=${options.originalCost}`]),
       options.inputFilename,
       '-o', options.outputFilename,
-    ]);
+    ], options);
 
     try {
       await MaxcsoInfo.header(options.outputFilename);
