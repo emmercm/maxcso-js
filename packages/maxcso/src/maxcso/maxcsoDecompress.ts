@@ -1,6 +1,6 @@
-import MaxcsoBin from './maxcsoBin.js';
+import MaxcsoBin, { MaxcsoBinOptions } from './maxcsoBin.js';
 
-export interface DecompressOptions {
+export interface DecompressOptions extends MaxcsoBinOptions {
   inputFilename: string,
   outputFilename: string,
 }
@@ -11,6 +11,6 @@ export default {
       '--decompress',
       options.inputFilename,
       '-o', options.outputFilename,
-    ]);
+    ], options);
   },
 };
