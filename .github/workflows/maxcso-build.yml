@@ -5,6 +5,8 @@
 name: maxcso Build
 
 on:
+  # TODO(cemmer): DEBUG!
+  push:
   workflow_dispatch:
     inputs:
       maxcso_ref:
