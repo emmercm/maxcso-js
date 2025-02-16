@@ -79,7 +79,6 @@ jobs:
         run: |
           set -x
           file maxcso
-          brew install binutils
           readelf -d maxcso | grep NEEDED
       - name: Rename binary
         run: |
@@ -124,6 +123,7 @@ jobs:
           set -x
           ./maxcso --help || true
           file maxcso
+          brew install binutils
           readelf -d maxcso | grep NEEDED
       - name: Strip binary
         run: |
