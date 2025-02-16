@@ -85,6 +85,7 @@ jobs:
           dir="artifacts/packages/maxcso-linux-${{ matrix.nodejs_arch }}"
           mkdir -p "${dir}"
           mv maxcso "${dir}/"
+          ls -al "${dir}/"
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-${{ matrix.nodejs_arch }}-${{ github.sha }}
@@ -134,6 +135,7 @@ jobs:
           dir="artifacts/packages/maxcso-darwin-${{ matrix.nodejs_arch }}"
           mkdir -p "${dir}"
           mv maxcso ./*.dylib "${dir}/"
+          ls -al "${dir}/"
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-${{ matrix.nodejs_arch }}-${{ github.sha }}
@@ -172,6 +174,7 @@ jobs:
           $Dir = "artifacts\packages\maxcso-win32-${{ matrix.nodejs_arch }}"
           mkdir "$Dir"
           mv maxcso*.exe "$Dir\maxcso.exe"
+          cmd /r dir "$Dir\" /q
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-${{ matrix.platform }}-${{ github.sha }}
