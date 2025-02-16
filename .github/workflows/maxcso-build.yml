@@ -79,7 +79,7 @@ jobs:
         run: |
           set -x
           file maxcso
-          readelf -d chdman | grep NEEDED
+          readelf -d maxcso | grep NEEDED
       - name: Rename binary
         run: |
           dir="artifacts/packages/maxcso-linux-${{ matrix.nodejs_arch }}"
@@ -117,13 +117,13 @@ jobs:
             cp "${file}" ./
             install_name_tool -change "${file}" "@executable_path/$(basename "${file}")" maxcso
           done
-          brew uninstall lz4 libuv libdeflate
+          brew uninstall --ignore-dependencies lz4 libuv libdeflate
       - name: Test binary
         run: |
           set -x
           ./maxcso --help
           file maxcso
-          readelf -d chdman | grep NEEDED
+          readelf -d maxcso | grep NEEDED
       - name: Strip binary
         run: |
           ls -al maxcso
