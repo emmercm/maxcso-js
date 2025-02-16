@@ -139,7 +139,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-${{ matrix.nodejs_arch }}-${{ github.sha }}
-          path: artifacts/**/maxcso
+          path: |
+            artifacts/**/maxcso
+            artifacts/**/*.dylib
           if-no-files-found: error
 
   build-windows:
@@ -178,9 +180,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-${{ matrix.platform }}-${{ github.sha }}
-          path: |
-            artifacts/**/maxcso.exe
-            artifacts/**/*.dylib
+          path: artifacts/**/maxcso.exe
           if-no-files-found: error
 
   git-update:
