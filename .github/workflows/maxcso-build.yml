@@ -108,7 +108,7 @@ jobs:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAXCSO_REF }}
       - name: Install dependencies
-        run: brew install --overwrite pkg-config lz4 libuv libdeflate
+        run: brew install --overwrite lz4 libuv libdeflate
       - name: Build
         run: make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)"
       - name: Make portable
@@ -123,8 +123,7 @@ jobs:
           set -x
           ./maxcso --help || true
           file maxcso
-          brew install binutils
-          readelf -d maxcso | grep NEEDED
+          otool -L maxcso
       - name: Strip binary
         run: |
           ls -al maxcso
