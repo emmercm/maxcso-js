@@ -75,9 +75,11 @@ jobs:
             ls -al maxcso
             strip maxcso
             ls -al maxcso
-
-            apt-get install -y file
-            file maxcso
+      - name: Test binary
+        run: |
+          set -x
+          file maxcso
+          readelf -d chdman | grep NEEDED
       - name: Rename binary
         run: |
           dir="artifacts/packages/maxcso-linux-${{ matrix.nodejs_arch }}"
@@ -108,10 +110,13 @@ jobs:
       - name: Install dependencies
         run: brew install --overwrite lz4 libuv libdeflate
       - name: Build
+        run: make "-j$(sysctl -n hw.physicalcpu)"
+      - name: Test binary
         run: |
-          make "-j$(sysctl -n hw.physicalcpu)"
+          set -x
+          ./maxcso --help
           file maxcso
-          otool -L maxcso
+          readelf -d chdman | grep NEEDED
       - name: Strip binary
         run: |
           ls -al maxcso
@@ -150,6 +155,9 @@ jobs:
         run: |
           msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}"
           cmd /r dir /q
+      - name: Test binary
+        run: |
+          .\maxcso.exe --help
 #      - name: Strip binary
 #        run: |
 #          ls -al maxcso.exe
@@ -180,7 +188,7 @@ jobs:
       - uses: actions/setup-node@v4
       - id: bump-and-commit
         run: |
-          package_name=$(jq --raw-output '.name' packages/maxcso/package.json)
+          package_name=$(jq --raw-output '.name' package.json)
           major_version=$(npm show "${package_name}" --json | jq --raw-output '.versions | .[]' | sed 's/\.[0-9]*//g' | sort | tail -1)
           # shellcheck disable=SC2001
           minor_version=$(echo "${MAXCSO_REF}" | sed 's/[^0-9]*//g' | sed 's/^0*//')
@@ -206,9 +214,11 @@ jobs:
           echo "USER_NAME=${USER_NAME}" >> "${GITHUB_OUTPUT}"
           git config --global user.name "${USER_NAME}"
 
-          PACKAGE_VERSION="$(jq --raw-output '.version' packages/maxcso/package.json)"
+          PACKAGE_VERSION="$(jq --raw-output '.version' package.json)"
           echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> "${GITHUB_OUTPUT}"
           git commit -m "v${PACKAGE_VERSION}"
+
+          exit 1
         env:
           GH_TOKEN: ${{ github.token }}
       # Create the pull request, and optionally mark it as auto-merge
