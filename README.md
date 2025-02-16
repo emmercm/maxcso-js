@@ -11,11 +11,11 @@
 
 ## Supported platforms
 
-| OS      | Architectures                                               | Additional Instructions                                                                                                                                                                             |
-|---------|-------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Windows | <ul><li>x64</li><li>x86</li></ul>                           |                                                                                                                                                                                                     |
-| macOS   | <ul><li>arm64 (Apple Silicon)</li><li>x64 (Intel)</li></ul> | [lz4](https://lz4.org/), [libuv](https://libuv.org/), and [libdeflate](https://github.com/ebiggers/libdeflate) are required to be installed separately:<pre>brew install lz4 libuv libdeflate</pre> |
-| Linux   | <ul><li>x64</li><li>x86</li><li>arm64 v8</li></ul>          |                                                                                                                                                                                                     |
+| OS      | Architectures                                               |
+|---------|-------------------------------------------------------------|
+| Windows | <ul><li>x64</li><li>x86</li></ul>                           |
+| macOS   | <ul><li>arm64 (Apple Silicon)</li><li>x64 (Intel)</li></ul> |
+| Linux   | <ul><li>x64</li><li>x86</li><li>arm64 v8</li></ul>          |
 
 ## Running
 
