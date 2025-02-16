@@ -79,6 +79,7 @@ jobs:
         run: |
           set -x
           file maxcso
+          brew install binutils
           readelf -d maxcso | grep NEEDED
       - name: Rename binary
         run: |
