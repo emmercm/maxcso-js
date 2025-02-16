@@ -133,7 +133,7 @@ jobs:
         run: |
           dir="artifacts/packages/maxcso-darwin-${{ matrix.nodejs_arch }}"
           mkdir -p "${dir}"
-          mv maxcso *.dylib "${dir}/"
+          mv maxcso ./*.dylib "${dir}/"
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-${{ matrix.nodejs_arch }}-${{ github.sha }}
