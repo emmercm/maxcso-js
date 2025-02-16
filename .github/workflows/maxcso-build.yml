@@ -69,7 +69,7 @@ jobs:
 
             apt-get update
             apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev
-            make -j$(nproc)
+            make VERBOSE=1 -j$(nproc)
 
             apt-get install -y binutils
             ls -al maxcso
@@ -111,7 +111,7 @@ jobs:
       - name: Install dependencies
         run: brew install --overwrite pkg-config lz4 libuv libdeflate
       - name: Build
-        run: make "-j$(sysctl -n hw.physicalcpu)"
+        run: make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)"
       - name: Make portable
         run: |
           otool -L maxcso | awk '{print $1}' | grep -E "^$(brew --prefix)" | while read -r file; do
