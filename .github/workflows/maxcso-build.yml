@@ -108,7 +108,7 @@ jobs:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAXCSO_REF }}
       - name: Install dependencies
-        run: brew install --overwrite lz4 libuv libdeflate
+        run: brew install --overwrite pkg-config lz4 libuv libdeflate
       - name: Build
         run: make "-j$(sysctl -n hw.physicalcpu)"
       - name: Make portable
@@ -162,9 +162,6 @@ jobs:
         run: |
           msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}"
           cmd /r dir /q
-      - name: Test binary
-        run: |
-          dumpbin /dependents maxcso.exe
 #      - name: Strip binary
 #        run: |
 #          ls -al maxcso.exe
