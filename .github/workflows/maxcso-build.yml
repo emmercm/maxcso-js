@@ -164,7 +164,7 @@ jobs:
           cmd /r dir /q
       - name: Test binary
         run: |
-          .\maxcso.exe --help || true
+          dumpbin /dependents maxcso.exe
 #      - name: Strip binary
 #        run: |
 #          ls -al maxcso.exe
