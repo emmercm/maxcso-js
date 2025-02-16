@@ -27,7 +27,7 @@ permissions:
   contents: write
 
 env:
-  MAXCSO_REF: ${{ inputs.maxcso_ref || 'v1.13.0' }}
+  MAXCSO_REF: ${{ inputs.maxcso_ref || 'master' }}
 
 jobs:
   build-linux:
