@@ -111,6 +111,13 @@ jobs:
         run: brew install --overwrite lz4 libuv libdeflate
       - name: Build
         run: make "-j$(sysctl -n hw.physicalcpu)"
+      - name: Make portable
+        run: |
+          otool -L maxcso | awk '{print $1}' | grep -E "^$(brew --prefix)" | while read -r file; do
+            cp "${file}" ./
+            install_name_tool -change "${file}" "@executable_path/$(basename "${file}")" maxcso
+          done
+          brew uninstall lz4 libuv libdeflate
       - name: Test binary
         run: |
           set -x
