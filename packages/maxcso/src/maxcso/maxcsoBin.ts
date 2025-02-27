@@ -52,7 +52,10 @@ export default class MaxcsoBin {
   }
 
   private static async getBinPathExisting(): Promise<string | undefined> {
-    const resolved = await which('maxcso', { nothrow: true });
+    const resolved = await which(
+      process.platform === 'win32' ? 'maxcso.exe' : 'maxcso',
+      { nothrow: true },
+    );
     if (resolved) {
       return resolved;
     }
