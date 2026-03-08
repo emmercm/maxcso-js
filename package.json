@@ -21,7 +21,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "lerna": "^9.0.5"
+    "lerna": "^9.0.3"
   },
   "engines": {
     "node": ">=16.12.0"
