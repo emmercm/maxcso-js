@@ -55,7 +55,6 @@ jobs:
         os: [ ubuntu-24.04, ubuntu-24.04-arm, macos-15-intel, macos-15, windows-latest ]
         node-version:
           - lts
-          # Using this instead of v16.6.0 to get npm v8.1+ to fix workspace issues
           - 18
     steps:
       # Setup and install
