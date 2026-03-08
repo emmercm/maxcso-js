@@ -56,7 +56,7 @@ jobs:
         node-version:
           - lts
           # Using this instead of v16.6.0 to get npm v8.1+ to fix workspace issues
-          - 16.12.0
+          - 18
     steps:
       # Setup and install
       - uses: actions/checkout@v4
