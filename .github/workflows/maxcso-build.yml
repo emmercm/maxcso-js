@@ -165,6 +165,22 @@ jobs:
         with:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAXCSO_REF }}
+      - name: Strip PlatformToolset from source
+        shell: powershell
+        run: |
+          foreach ($path in @(
+            "cli/cli.vcxproj", "zlib/zlib.vcxproj", "zopfli/zopfli.vcxproj",
+            "libuv/libuv.vcxproj", "7zip/7zip.vcxproj", "src/src.vcxproj",
+            "lz4/lz4.vcxproj", "libdeflate/libdeflate.vcxproj"
+          )) {
+            if (-not (Test-Path $path)) { continue }
+            $c = [System.IO.File]::ReadAllText($path)
+            $new = [regex]::Replace($c, '\s*<PlatformToolset>[^<]*</PlatformToolset>', '')
+            if ($new -ne $c) {
+              [System.IO.File]::WriteAllText($path, $new)
+              Write-Host "Patched: $path"
+            }
+          }
       - if: matrix.platform == 'ARM64'
         name: Patch source for ARM64
         shell: powershell
@@ -215,8 +231,6 @@ jobs:
               # Remove x86-only settings not supported on ARM64
               $middle   = [regex]::Replace($middle, '\s*<EnableEnhancedInstructionSet>[^<]*</EnableEnhancedInstructionSet>', '')
               $middle   = [regex]::Replace($middle, '\s*<OmitFramePointers>[^<]*</OmitFramePointers>', '')
-              # v141_xp toolset does not support ARM64; remove it so MSBuild uses the default
-              $middle   = [regex]::Replace($middle, '\s*<PlatformToolset>[^<]*</PlatformToolset>', '')
               $closeTag = $m.Groups[4].Value
               "$($m.Value)`n  $openTag$middle$closeTag"
             })
@@ -227,7 +241,7 @@ jobs:
       - uses: microsoft/setup-msbuild@v2
       - name: Build
         run: |
-          msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}" /property:PlatformToolset=v143
+          msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}"
           cmd /r dir /q
 #      - name: Strip binary
 #        run: |
