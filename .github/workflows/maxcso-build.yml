@@ -113,7 +113,7 @@ jobs:
       - name: Build
         run: |
           B="$(brew --prefix)"
-          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)" "CFLAGS=-O2 -I$B/include" "CXXFLAGS=-O2 -I$B/include" "LDFLAGS=-L$B/lib" "LIBS=-luv -llz4 -lz"
+          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)" "CFLAGS=-O2 -I$B/include" "CXXFLAGS=-O2 -I$B/include" "LIBS=-L$B/lib -luv -llz4 -lz"
       - name: Make portable
         run: |
           set -x
