@@ -59,7 +59,6 @@
     "@emmercm/maxcso-linux-arm64": "^0.1130.12",
     "@emmercm/maxcso-linux-ia32": "^0.1130.12",
     "@emmercm/maxcso-linux-x64": "^0.1130.12",
-    "@emmercm/maxcso-win32-arm64": "^0.1130.12",
     "@emmercm/maxcso-win32-ia32": "^0.1130.12",
     "@emmercm/maxcso-win32-x64": "^0.1130.12"
   },
