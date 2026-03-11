@@ -77,6 +77,7 @@ jobs:
       - name: Test binary
         run: |
           set -x
+          ./maxcso --help
           file maxcso
           readelf -d maxcso | grep NEEDED
       - name: Rename binary
@@ -256,6 +257,9 @@ jobs:
         run: |
           msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}" "/property:PlatformToolset=${{ env.PLATFORM_TOOLSET }}"
           cmd /r dir /q
+      - name: Test binary
+        run: |
+          ./maxcso.exe --help
 #      - name: Strip binary
 #        run: |
 #          ls -al maxcso.exe
