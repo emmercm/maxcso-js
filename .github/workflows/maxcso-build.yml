@@ -172,11 +172,10 @@ jobs:
           if (-not (Test-Path $vsWhere)) {
             $vsWhere = "${env:ProgramFiles}\Microsoft Visual Studio\Installer\vswhere.exe"
           }
-          $vsPath   = & $vsWhere -latest -property installationPath
-          $toolsVer = (Get-ChildItem "$vsPath\VC\Tools\MSVC" | Sort-Object Name | Select-Object -Last 1).Name
-          $parts    = $toolsVer -split '\.'
-          $toolset  = "v$($parts[0])$($parts[1][0])"
-          Write-Host "Detected VC toolset: $toolset (from MSVC $toolsVer)"
+          $vsPath  = & $vsWhere -latest -property installationPath
+          $vcMsDir = Get-ChildItem "$vsPath\MSBuild\Microsoft\VC" -Directory | Sort-Object Name | Select-Object -Last 1
+          $toolset = (Get-ChildItem "$($vcMsDir.FullName)\Platforms\x64\PlatformToolsets" -Filter "v1*" -Directory | Sort-Object Name | Select-Object -Last 1).Name
+          Write-Host "Detected VC toolset: $toolset"
           "PLATFORM_TOOLSET=$toolset" | Out-File -FilePath $env:GITHUB_ENV -Append
       - if: matrix.platform == 'ARM64'
         name: Patch source for ARM64
