@@ -109,17 +109,10 @@ jobs:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAXCSO_REF }}
       - name: Install dependencies
-        run: brew install --overwrite lz4 libuv libdeflate
+        run: brew install --overwrite lz4 libuv libdeflate pkg-config
       - name: Build
         run: |
-          BREW="$(brew --prefix)"
-          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)" \
-            "CFLAGS_UV=-I${BREW}/include" \
-            "LIBS_UV=-L${BREW}/lib -luv" \
-            "CFLAGS_LZ4=-I${BREW}/include" \
-            "LIBS_LZ4=-L${BREW}/lib -llz4" \
-            "CFLAGS_ZLIB=-I${BREW}/include" \
-            "LIBS_ZLIB=-L${BREW}/lib -lz"
+          PKG_CONFIG_PATH="$(brew --prefix)/lib/pkgconfig" make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)"
       - name: Make portable
         run: |
           set -x
