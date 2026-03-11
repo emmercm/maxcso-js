@@ -177,6 +177,23 @@ jobs:
           $toolset = (Get-ChildItem "$($vcMsDir.FullName)\Platforms\x64\PlatformToolsets" -Filter "v1*" -Directory | Sort-Object Name | Select-Object -Last 1).Name
           Write-Host "Detected VC toolset: $toolset"
           "PLATFORM_TOOLSET=$toolset" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Patch source
+        shell: powershell
+        run: |
+          foreach ($path in @(
+            "cli/cli.vcxproj", "zlib/zlib.vcxproj", "zopfli/zopfli.vcxproj",
+            "libuv/libuv.vcxproj", "7zip/7zip.vcxproj", "src/src.vcxproj",
+            "lz4/lz4.vcxproj", "libdeflate/libdeflate.vcxproj"
+          )) {
+            if (-not (Test-Path $path)) { continue }
+            $c = [System.IO.File]::ReadAllText($path)
+            # Remove old Windows SDK version so MSBuild uses the default (latest installed)
+            $new = [regex]::Replace($c, '\s*<WindowsTargetPlatformVersion>[^<]*</WindowsTargetPlatformVersion>', '')
+            if ($new -ne $c) {
+              [System.IO.File]::WriteAllText($path, $new)
+              Write-Host "Patched: $path"
+            }
+          }
       - if: matrix.platform == 'ARM64'
         name: Patch source for ARM64
         shell: powershell
