@@ -260,6 +260,7 @@ jobs:
           msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}" "/property:PlatformToolset=${{ env.PLATFORM_TOOLSET }}"
           cmd /r dir /q
       - name: Test binary
+        shell: powershell
         run: |
           $path = Resolve-Path "maxcso*.exe"
           & $path --help || true
@@ -269,6 +270,7 @@ jobs:
 #          strip maxcso.exe
 #          ls -al maxcso.exe
       - name: Rename binary
+        shell: powershell
         run: |
           $Dir = "artifacts\packages\maxcso-win32-${{ matrix.nodejs_arch }}"
           mkdir "$Dir"
