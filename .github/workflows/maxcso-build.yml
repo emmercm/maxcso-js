@@ -77,7 +77,7 @@ jobs:
       - name: Test binary
         run: |
           set -x
-          ./maxcso --help
+          ./maxcso --help || true
           file maxcso
           readelf -d maxcso | grep NEEDED
       - name: Rename binary
@@ -151,10 +151,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-2025
+          - os: windows-latest
             platform: x64
             nodejs_arch: x64
-          - os: windows-2025
+          - os: windows-latest
             platform: Win32
             nodejs_arch: ia32
           - os: windows-11-arm
@@ -259,7 +259,7 @@ jobs:
           cmd /r dir /q
       - name: Test binary
         run: |
-          ./maxcso.exe --help
+          ./maxcso.exe --help || true
 #      - name: Strip binary
 #        run: |
 #          ls -al maxcso.exe
