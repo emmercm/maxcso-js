@@ -112,8 +112,14 @@ jobs:
         run: brew install --overwrite lz4 libuv libdeflate
       - name: Build
         run: |
-          export PKG_CONFIG_PATH="$(brew --prefix)/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
-          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)"
+          BREW="$(brew --prefix)"
+          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)" \
+            "CFLAGS_UV=-I${BREW}/include" \
+            "LIBS_UV=-L${BREW}/lib -luv" \
+            "CFLAGS_LZ4=-I${BREW}/include" \
+            "LIBS_LZ4=-L${BREW}/lib -llz4" \
+            "CFLAGS_ZLIB=-I${BREW}/include" \
+            "LIBS_ZLIB=-L${BREW}/lib -lz"
       - name: Make portable
         run: |
           set -x
