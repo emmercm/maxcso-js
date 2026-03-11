@@ -150,10 +150,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-2022
+          - os: windows-2025
             platform: x64
             nodejs_arch: x64
-          - os: windows-2022
+          - os: windows-2025
             platform: Win32
             nodejs_arch: ia32
           - os: windows-11-arm
@@ -165,20 +165,69 @@ jobs:
         with:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAXCSO_REF }}
-      # WARN(cemmer): this is untested Gemini 3 code
-      - if: matrix.platform != 'ARM64'
+      - if: matrix.platform == 'ARM64'
+        name: Patch source for ARM64
         shell: powershell
         run: |
-          $installer = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe"
-          Start-Process -FilePath $installer -ArgumentList `
-            "modify", `
-            "--installPath", "C:\Program Files\Microsoft Visual Studio\2022\Enterprise", `
-            "--add", "Microsoft.VisualStudio.Component.VC.v141.x86.x64.XP", `
-            "--quiet", "--norestart" -Wait
+          $ErrorActionPreference = 'Stop'
+
+          # Patch maxcso.sln to add Release|ARM64 platform
+          $slnPath = "cli/maxcso.sln"
+          $sln = [System.IO.File]::ReadAllText($slnPath)
+          $sln = $sln.Replace(
+            "Release|x64 = Release|x64",
+            "Release|x64 = Release|x64`r`n`t`tRelease|ARM64 = Release|ARM64"
+          )
+          $sln = [regex]::Replace($sln, '(\{[A-Fa-f0-9-]+\})(\.Release\|x64\.Build\.0 = Release\|x64)', {
+            param($m)
+            $guid = $m.Groups[1].Value
+            "$($m.Value)`r`n`t`t${guid}.Release|ARM64.ActiveCfg = Release|ARM64`r`n`t`t${guid}.Release|ARM64.Build.0 = Release|ARM64"
+          })
+          [System.IO.File]::WriteAllText($slnPath, $sln)
+          Write-Host "Patched: $slnPath"
+
+          # Patch all .vcxproj files to add Release|ARM64 configuration
+          $vcxprojPaths = @(
+            "cli/cli.vcxproj", "zlib/zlib.vcxproj", "zopfli/zopfli.vcxproj",
+            "libuv/libuv.vcxproj", "7zip/7zip.vcxproj", "src/src.vcxproj",
+            "lz4/lz4.vcxproj", "libdeflate/libdeflate.vcxproj"
+          )
+          foreach ($vcxprojPath in $vcxprojPaths) {
+            if (-not (Test-Path $vcxprojPath)) { Write-Warning "Skipping: $vcxprojPath"; continue }
+            $c = [System.IO.File]::ReadAllText($vcxprojPath)
+
+            # Clone Release|x64 ProjectConfiguration entry to ARM64
+            $mx = [regex]::Match($c, '(?s)<ProjectConfiguration Include="Release\|x64">.*?</ProjectConfiguration>')
+            if ($mx.Success) {
+              $arm64 = $mx.Value -replace 'Release\|x64', 'Release|ARM64' -replace '<Platform>x64</Platform>', '<Platform>ARM64</Platform>'
+              $c = $c.Replace($mx.Value, "$($mx.Value)`n    $arm64")
+            }
+
+            # Clone all Release|x64 conditional XML elements to Release|ARM64
+            $opts = [System.Text.RegularExpressions.RegexOptions]::Singleline
+            $pat = [System.Text.RegularExpressions.Regex]::new(
+              '(<(PropertyGroup|ImportGroup|ItemDefinitionGroup)[^>]*Condition="[^"]*Release\|x64[^"]*"[^>]*>)(.*?)(</\2>)', $opts
+            )
+            $c = $pat.Replace($c, [System.Text.RegularExpressions.MatchEvaluator]{
+              param($m)
+              $openTag  = $m.Groups[1].Value -replace 'Release\|x64', 'Release|ARM64'
+              $middle   = $m.Groups[3].Value
+              # Remove x86-only settings not supported on ARM64
+              $middle   = [regex]::Replace($middle, '\s*<EnableEnhancedInstructionSet>[^<]*</EnableEnhancedInstructionSet>', '')
+              $middle   = [regex]::Replace($middle, '\s*<OmitFramePointers>[^<]*</OmitFramePointers>', '')
+              # v141_xp toolset does not support ARM64; remove it so MSBuild uses the default
+              $middle   = [regex]::Replace($middle, '\s*<PlatformToolset>[^<]*</PlatformToolset>', '')
+              $closeTag = $m.Groups[4].Value
+              "$($m.Value)`n  $openTag$middle$closeTag"
+            })
+
+            [System.IO.File]::WriteAllText($vcxprojPath, $c)
+            Write-Host "Patched: $vcxprojPath"
+          }
       - uses: microsoft/setup-msbuild@v2
       - name: Build
         run: |
-          msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}"
+          msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}" /property:PlatformToolset=v143
           cmd /r dir /q
 #      - name: Strip binary
 #        run: |
