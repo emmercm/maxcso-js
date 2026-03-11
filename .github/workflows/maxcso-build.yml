@@ -267,7 +267,8 @@ jobs:
           cmd /r dir /q
       - name: Test binary
         run: |
-          ./maxcso.exe --help || true
+          $path = Resolve-Path "maxcso*.exe"
+          & $path --help || true
 #      - name: Strip binary
 #        run: |
 #          ls -al maxcso.exe
