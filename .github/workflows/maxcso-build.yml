@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       maxcso_ref:
-        description: 'maxcso GitHub version tag (e.g. "v1.13.0")'
+        description: 'Git ref (refs/heads/<branch>, refs/tags/<tag>, etc.) or SHA'
         required: true
         type: string
       auto-merge:
