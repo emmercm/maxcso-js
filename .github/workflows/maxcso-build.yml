@@ -111,7 +111,9 @@ jobs:
       - name: Install dependencies
         run: brew install --overwrite lz4 libuv libdeflate
       - name: Build
-        run: make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)"
+        run: |
+          export PKG_CONFIG_PATH="$(brew --prefix)/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)"
       - name: Make portable
         run: |
           set -x
