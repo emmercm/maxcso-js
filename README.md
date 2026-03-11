@@ -13,7 +13,7 @@
 
 | OS      | Architectures                                               |
 |---------|-------------------------------------------------------------|
-| Windows | <ul><li>x64</li><li>x86</li></ul>                           |
+| Windows | <ul><li>x64</li><li>x86</li><li>arm64</li></ul>             |
 | macOS   | <ul><li>arm64 (Apple Silicon)</li><li>x64 (Intel)</li></ul> |
 | Linux   | <ul><li>x64</li><li>x86</li><li>arm64 v8</li></ul>          |
 
