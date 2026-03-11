@@ -112,8 +112,8 @@ jobs:
         run: brew install --overwrite lz4 libuv libdeflate
       - name: Build
         run: |
-          B="$(brew --prefix)"
-          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)" "CFLAGS=-O2 -I$B/include" "CXXFLAGS=-O2 -I$B/include -L$B/lib" "LIBS=-luv -llz4 -lz"
+          BREW_PREFIX="$(brew --prefix)"
+          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)" "CFLAGS=-O2 -I${BREW_PREFIX}/include" "CXXFLAGS=-O2 -I${BREW_PREFIX}/include -L${BREW_PREFIX}/lib" "LIBS=-luv -llz4 -lz"
       - name: Make portable
         run: |
           set -x
