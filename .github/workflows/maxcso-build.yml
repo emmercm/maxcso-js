@@ -165,22 +165,19 @@ jobs:
         with:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAXCSO_REF }}
-      - name: Strip PlatformToolset from source
+      - name: Detect VC toolset
         shell: powershell
         run: |
-          foreach ($path in @(
-            "cli/cli.vcxproj", "zlib/zlib.vcxproj", "zopfli/zopfli.vcxproj",
-            "libuv/libuv.vcxproj", "7zip/7zip.vcxproj", "src/src.vcxproj",
-            "lz4/lz4.vcxproj", "libdeflate/libdeflate.vcxproj"
-          )) {
-            if (-not (Test-Path $path)) { continue }
-            $c = [System.IO.File]::ReadAllText($path)
-            $new = [regex]::Replace($c, '\s*<PlatformToolset>[^<]*</PlatformToolset>', '')
-            if ($new -ne $c) {
-              [System.IO.File]::WriteAllText($path, $new)
-              Write-Host "Patched: $path"
-            }
+          $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          if (-not (Test-Path $vsWhere)) {
+            $vsWhere = "${env:ProgramFiles}\Microsoft Visual Studio\Installer\vswhere.exe"
           }
+          $vsPath   = & $vsWhere -latest -property installationPath
+          $toolsVer = (Get-ChildItem "$vsPath\VC\Tools\MSVC" | Sort-Object Name | Select-Object -Last 1).Name
+          $parts    = $toolsVer -split '\.'
+          $toolset  = "v$($parts[0])$($parts[1][0])"
+          Write-Host "Detected VC toolset: $toolset (from MSVC $toolsVer)"
+          "PLATFORM_TOOLSET=$toolset" | Out-File -FilePath $env:GITHUB_ENV -Append
       - if: matrix.platform == 'ARM64'
         name: Patch source for ARM64
         shell: powershell
@@ -241,7 +238,7 @@ jobs:
       - uses: microsoft/setup-msbuild@v2
       - name: Build
         run: |
-          msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}"
+          msbuild cli/maxcso.sln -maxcpucount /property:Configuration=Release "/property:Platform=${{ matrix.platform }}" "/property:PlatformToolset=${{ env.PLATFORM_TOOLSET }}"
           cmd /r dir /q
 #      - name: Strip binary
 #        run: |
