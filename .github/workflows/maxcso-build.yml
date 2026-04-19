@@ -52,6 +52,11 @@ jobs:
         with:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAXCSO_REF }}
+      - name: Patch source
+        run: |
+          # Statically link libuv and liblz4
+          sed -i 's/-luv\b/-l:libuv.a -ldl -lrt/' Makefile
+          sed -i 's/-llz4\b/-l:liblz4.a/' Makefile
       - uses: docker/setup-qemu-action@v3
       - name: Build
         uses: addnab/docker-run-action@v3
@@ -109,18 +114,16 @@ jobs:
           ref: ${{ env.MAXCSO_REF }}
       - name: Install dependencies
         run: brew install --overwrite lz4 libuv libdeflate
+      - name: Patch source
+        run: |
+          # Statically link libuv and liblz4 against brew's static archives
+          BREW_PREFIX="$(brew --prefix)"
+          sed -i '' "s|-luv|${BREW_PREFIX}/lib/libuv.a -framework CoreServices -framework CoreFoundation|" Makefile
+          sed -i '' "s|-llz4|${BREW_PREFIX}/lib/liblz4.a|" Makefile
       - name: Build
         run: |
           BREW_PREFIX="$(brew --prefix)"
-          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)" "CFLAGS=-O2 -I${BREW_PREFIX}/include" "CXXFLAGS=-O2 -I${BREW_PREFIX}/include -L${BREW_PREFIX}/lib" "LIBS=-luv -llz4 -lz"
-      - name: Make portable
-        run: |
-          set -x
-          otool -L maxcso | awk '{print $1}' | grep -E "^$(brew --prefix)" | while read -r file; do
-            cp "${file}" ./
-            install_name_tool -change "${file}" "@executable_path/$(basename "${file}")" maxcso
-          done
-          brew uninstall --ignore-dependencies lz4 libuv libdeflate
+          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)" "CFLAGS=-O2 -I${BREW_PREFIX}/include" "CXXFLAGS=-O2 -I${BREW_PREFIX}/include"
       - name: Test binary
         run: |
           set -x
@@ -136,14 +139,12 @@ jobs:
         run: |
           dir="artifacts/packages/maxcso-darwin-${{ matrix.nodejs_arch }}"
           mkdir -p "${dir}"
-          mv maxcso ./*.dylib "${dir}/"
+          mv maxcso "${dir}/"
           ls -al "${dir}/"
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-${{ matrix.nodejs_arch }}-${{ github.sha }}
-          path: |
-            artifacts/**/maxcso
-            artifacts/**/*.dylib
+          path: artifacts/**/maxcso
           if-no-files-found: error
 
   build-windows:
@@ -291,7 +292,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Delete old macoS .dylibs
         run: |
-          rm packages/*-darwin-*/*.dylib
+          rm -f packages/*-darwin-*/*.dylib
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
