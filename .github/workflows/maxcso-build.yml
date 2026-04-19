@@ -52,6 +52,10 @@ jobs:
         with:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAXCSO_REF }}
+      - name: Patch source
+        run: |
+          # Statically link libuv
+          sed -i 's/-luv\b/-l:libuv.a -ldl -lrt/' Makefile
       - uses: docker/setup-qemu-action@v3
       - name: Build
         uses: addnab/docker-run-action@v3
