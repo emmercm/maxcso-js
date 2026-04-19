@@ -55,8 +55,9 @@ jobs:
           ref: ${{ env.MAXCSO_REF }}
       - name: Patch source
         run: |
-          # Statically link libuv
+          # Statically link libuv and liblz4
           sed -i 's/-luv\b/-l:libuv.a -ldl -lrt/' Makefile
+          sed -i 's/-llz4\b/-l:liblz4.a/' Makefile
       - uses: docker/setup-qemu-action@v3
       - name: Build
         uses: addnab/docker-run-action@v3
