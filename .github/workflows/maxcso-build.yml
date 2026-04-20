@@ -9,7 +9,7 @@ on:
     inputs:
       maxcso_ref:
         description: 'Git ref (refs/heads/<branch>, refs/tags/<tag>, etc.) or SHA'
-        required: true
+        # required: true
         type: string
       auto-merge:
         description: 'Auto-merge pull request?'
@@ -25,7 +25,7 @@ permissions:
   contents: write
 
 env:
-  MAXCSO_REF: ${{ inputs.maxcso_ref || 'v1.13.0' }}
+  MAXCSO_REF: ${{ inputs.maxcso_ref || 'refs/heads/master' }}
 
 jobs:
   build-linux:
@@ -72,7 +72,11 @@ jobs:
 
             apt-get update
             apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev
-            make VERBOSE=1 -j$(nproc)
+            # Statically link libgcc, libuv, and liblz4 (for new Makefiles that use pkg-config)
+            make VERBOSE=1 -j$(nproc) \
+              LDFLAGS='-static-libgcc' \
+              LIBS_UV='-l:libuv.a -ldl -lrt' \
+              LIBS_LZ4='-l:liblz4.a'
 
             apt-get install -y binutils
             ls -al maxcso
@@ -126,13 +130,20 @@ jobs:
       - name: Build
         run: |
           BREW_PREFIX="$(brew --prefix)"
-          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)" "CFLAGS=-O2 -I${BREW_PREFIX}/include" "CXXFLAGS=-O2 -I${BREW_PREFIX}/include"
+          # Statically link libuv and liblz4
+          make VERBOSE=1 "-j$(sysctl -n hw.physicalcpu)" \
+            "CFLAGS=-O2 -I${BREW_PREFIX}/include" \
+            "CXXFLAGS=-O2 -I${BREW_PREFIX}/include" \
+            "LIBS_UV=${BREW_PREFIX}/lib/libuv.a -framework CoreServices -framework CoreFoundation" \
+            "LIBS_LZ4=${BREW_PREFIX}/lib/liblz4.a"
       - name: Test binary
         run: |
           set -x
           ./maxcso --help || true
           file maxcso
           otool -L maxcso
+          if otool -L maxcso | grep -q 'liblz4'; then exit 1; fi
+          if otool -L maxcso | grep -q 'libuv'; then exit 1; fi
       - name: Strip binary
         run: |
           ls -al maxcso
