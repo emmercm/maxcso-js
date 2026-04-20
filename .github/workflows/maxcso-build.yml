@@ -143,6 +143,8 @@ jobs:
           ./maxcso --help || true
           file maxcso
           otool -L maxcso
+          if otool -L maxcso | grep -q 'liblz4'; then exit 1; fi
+          if otool -L maxcso | grep -q 'libuv'; then exit 1; fi
       - name: Strip binary
         run: |
           ls -al maxcso
