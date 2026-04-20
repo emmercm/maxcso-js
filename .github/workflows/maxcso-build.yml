@@ -54,8 +54,8 @@ jobs:
           ref: ${{ env.MAXCSO_REF }}
       - name: Patch source
         run: |
-          # Statically link libuv and liblz4
-          sed -i 's/-luv\b/-l:libuv.a -ldl -lrt/' Makefile
+          # Statically link libgcc, libuv, and liblz4
+          sed -i 's/-luv\b/-static-libgcc -l:libuv.a -ldl -lrt/' Makefile
           sed -i 's/-llz4\b/-l:liblz4.a/' Makefile
       - uses: docker/setup-qemu-action@v3
       - name: Build
@@ -84,6 +84,9 @@ jobs:
           ./maxcso --help || true
           file maxcso
           readelf -d maxcso | grep NEEDED
+          if readelf -d maxcso | grep NEEDED | grep -q 'libuv'; then exit 1; fi
+          if readelf -d maxcso | grep NEEDED | grep -q 'liblz4'; then exit 1; fi
+          if readelf -d maxcso | grep NEEDED | grep -q 'libgcc_s'; then exit 1; fi
       - name: Rename binary
         run: |
           dir="artifacts/packages/maxcso-linux-${{ matrix.nodejs_arch }}"
