@@ -72,7 +72,7 @@ export default class MaxcsoBin {
 
   /**
    * Look for maxcso binaries bundled with:
-   * `bun build --compile --asset-naming="[name].[ext]" maxcso *.dylib`
+   * `bun build --compile --asset-naming="[name].[ext]" maxcso`
    */
   private static async getBinPathBundledBun(): Promise<string | undefined> {
     try {
