@@ -43,9 +43,11 @@ jobs:
         run: |
           set -euo pipefail
           version=$(grep 'VERSION = ' src/compress.h | sed -E 's/.*"([0-9.]+)".*/\1/')
-          echo "major=$(echo "${version}" | sed -E 's/([0-9]+)\..*/\1/')" >> "${GITHUB_OUTPUT}"
-          echo "minor=$(echo "${version}" | sed -E 's/[0-9]+\.([0-9]+)\..*/\1/')" >> "${GITHUB_OUTPUT}"
-          echo "patch=$(echo "${version}" | sed -E 's/[0-9]+\.[0-9]+\.([0-9]+).*/\1/')" >> "${GITHUB_OUTPUT}"
+          {
+            echo "major=$(echo "${version}" | sed -E 's/([0-9]+)\..*/\1/')"
+            echo "minor=$(echo "${version}" | sed -E 's/[0-9]+\.([0-9]+)\..*/\1/')"
+            echo "patch=$(echo "${version}" | sed -E 's/[0-9]+\.[0-9]+\.([0-9]+).*/\1/')"
+          } >> "${GITHUB_OUTPUT}"
 
   build-linux:
     name: build-linux ${{ matrix.nodejs_arch }}
