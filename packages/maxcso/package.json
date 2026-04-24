@@ -1,6 +1,6 @@
 {
   "name": "maxcso",
-  "version": "0.1130.15",
+  "version": "0.1130.16",
   "description": "💿 maxcso binaries and wrapper for Node.js.",
   "keywords": [
     "cso",
@@ -54,14 +54,14 @@
     "which": "^6.0.1"
   },
   "optionalDependencies": {
-    "@emmercm/maxcso-darwin-arm64": "^0.1130.15",
-    "@emmercm/maxcso-darwin-x64": "^0.1130.15",
-    "@emmercm/maxcso-linux-arm64": "^0.1130.15",
-    "@emmercm/maxcso-linux-ia32": "^0.1130.15",
-    "@emmercm/maxcso-linux-x64": "^0.1130.15",
-    "@emmercm/maxcso-win32-arm64": "^0.1130.15",
-    "@emmercm/maxcso-win32-ia32": "^0.1130.15",
-    "@emmercm/maxcso-win32-x64": "^0.1130.15"
+    "@emmercm/maxcso-darwin-arm64": "^0.1130.16",
+    "@emmercm/maxcso-darwin-x64": "^0.1130.16",
+    "@emmercm/maxcso-linux-arm64": "^0.1130.16",
+    "@emmercm/maxcso-linux-ia32": "^0.1130.16",
+    "@emmercm/maxcso-linux-x64": "^0.1130.16",
+    "@emmercm/maxcso-win32-arm64": "^0.1130.16",
+    "@emmercm/maxcso-win32-ia32": "^0.1130.16",
+    "@emmercm/maxcso-win32-x64": "^0.1130.16"
   },
   "devDependencies": {
     "@types/bun": "^1.3.10",
