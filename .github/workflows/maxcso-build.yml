@@ -82,7 +82,7 @@ jobs:
           set -x
           ./maxcso --help || true
           file maxcso
-          if ! file maxcso | grep -q 'statically linked'; then exit 1; fi
+          if ! file maxcso | grep -qE 'statically linked|static-pie linked'; then exit 1; fi
       - name: Rename binary
         run: |
           dir="artifacts/packages/maxcso-linux-${{ matrix.nodejs_arch }}"
