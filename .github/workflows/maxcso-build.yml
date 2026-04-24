@@ -28,6 +28,27 @@ env:
   MAXCSO_REF: ${{ inputs.maxcso_ref || 'refs/heads/master' }}
 
 jobs:
+  get-version:
+    runs-on: ubuntu-latest
+    outputs:
+      major: ${{ steps.parse-version.outputs.major }}
+      minor: ${{ steps.parse-version.outputs.minor }}
+      patch: ${{ steps.parse-version.outputs.patch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: unknownbrackets/maxcso
+          ref: ${{ env.MAXCSO_REF }}
+      - id: parse-version
+        run: |
+          set -euo pipefail
+          version=$(grep 'VERSION = ' src/compress.h | sed -E 's/.*"([0-9.]+)".*/\1/')
+          {
+            echo "major=$(echo "${version}" | sed -E 's/([0-9]+)\..*/\1/')"
+            echo "minor=$(echo "${version}" | sed -E 's/[0-9]+\.([0-9]+)\..*/\1/')"
+            echo "patch=$(echo "${version}" | sed -E 's/[0-9]+\.[0-9]+\.([0-9]+).*/\1/')"
+          } >> "${GITHUB_OUTPUT}"
+
   build-linux:
     name: build-linux ${{ matrix.nodejs_arch }}
     strategy:
@@ -80,8 +101,17 @@ jobs:
         run: |
           set -x
           ./maxcso --help || true
+          readelf -d dolphin-tool
           file maxcso
-          if ! file maxcso | grep -qE 'statically linked|static-pie linked'; then exit 1; fi
+          if readelf -d dolphin-tool | grep -q NEEDED; then
+            echo "ERROR: binary has dynamic dependencies, expected fully static"
+            readelf -d dolphin-tool | grep NEEDED
+            exit 1
+          fi
+          if ! file dolphin-tool | grep -qE 'statically linked|static-pie linked'; then
+            echo "ERROR: 'file' does not report the binary as statically linked"
+            exit 1
+          fi
       - name: Rename binary
         run: |
           dir="artifacts/packages/maxcso-linux-${{ matrix.nodejs_arch }}"
@@ -289,6 +319,7 @@ jobs:
 
   git-update:
     needs:
+      - get-version
       - build-linux
       - build-macos
       - build-windows
@@ -303,8 +334,7 @@ jobs:
         run: |
           package_name=$(jq --raw-output '.name' packages/maxcso/package.json)
           major_version=$(npm show "${package_name}" --json | jq --raw-output '.versions | .[]' | sed 's/\.[0-9]*//g' | sort | tail -1)
-          # shellcheck disable=SC2001
-          minor_version=$(echo "${MAXCSO_REF}" | sed 's/[^0-9]*//g' | sed 's/^0*//')
+          minor_version=${{ needs.get-version.outputs.major }}${{ needs.get-version.outputs.minor }}${{ needs.get-version.outputs.patch }}
           previous_version=$(npm show "${package_name}" --json | jq --raw-output '.versions | .[]' | grep "${minor_version}" | tail -1)
           if [[ "${previous_version}" != "" ]]; then
             # shellcheck disable=SC2001
