@@ -34,16 +34,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - docker_image: i386/ubuntu:latest
+          - docker_image: i386/alpine:latest
             docker_arch: linux/386
             nodejs_arch: ia32
-          - docker_image: ubuntu:latest
+          - docker_image: alpine:latest
             docker_arch: linux/amd64
             nodejs_arch: x64
-          #- docker_image: ubuntu:latest
+          #- docker_image: alpine:latest
           #  docker_arch: linux/arm/v7
           #  nodejs_arch: arm
-          - docker_image: ubuntu:latest
+          - docker_image: alpine:latest
             docker_arch: linux/arm64/v8
             nodejs_arch: arm64
     runs-on: ubuntu-latest
@@ -52,17 +52,12 @@ jobs:
         with:
           repository: unknownbrackets/maxcso
           ref: ${{ env.MAXCSO_REF }}
-      - name: Patch source
-        run: |
-          # Statically link libgcc, libuv, and liblz4
-          sed -i 's/-luv\b/-static-libgcc -l:libuv.a -ldl -lrt/' Makefile
-          sed -i 's/-llz4\b/-l:liblz4.a/' Makefile
       - uses: docker/setup-qemu-action@v3
       - name: Build
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ matrix.docker_image }}
-          shell: bash
+          shell: sh
           options: |
             --platform ${{ matrix.docker_arch }}
             --volume ${{ github.workspace }}:/build
@@ -70,15 +65,14 @@ jobs:
           run: |
             set -euo pipefail
 
-            apt-get update
-            apt-get install -y build-essential pkgconf zlib1g-dev liblz4-dev libuv1-dev
-            # Statically link libgcc, libuv, and liblz4 (for new Makefiles that use pkg-config)
-            make VERBOSE=1 -j$(nproc) \
-              LDFLAGS='-static-libgcc' \
-              LIBS_UV='-l:libuv.a -ldl -lrt' \
-              LIBS_LZ4='-l:liblz4.a'
+            apk add --no-cache build-base pkgconf \
+              zlib-dev zlib-static \
+              lz4-dev lz4-static \
+              libuv-dev libuv-static
+            # Fully static binary (musl libc + all deps)
+            make VERBOSE=1 -j$(nproc) LDFLAGS='-static'
 
-            apt-get install -y binutils
+            apk add --no-cache binutils
             ls -al maxcso
             strip maxcso
             ls -al maxcso
@@ -87,10 +81,7 @@ jobs:
           set -x
           ./maxcso --help || true
           file maxcso
-          readelf -d maxcso | grep NEEDED
-          if readelf -d maxcso | grep NEEDED | grep -q 'libuv'; then exit 1; fi
-          if readelf -d maxcso | grep NEEDED | grep -q 'liblz4'; then exit 1; fi
-          if readelf -d maxcso | grep NEEDED | grep -q 'libgcc_s'; then exit 1; fi
+          if ! file maxcso | grep -q 'statically linked'; then exit 1; fi
       - name: Rename binary
         run: |
           dir="artifacts/packages/maxcso-linux-${{ matrix.nodejs_arch }}"
