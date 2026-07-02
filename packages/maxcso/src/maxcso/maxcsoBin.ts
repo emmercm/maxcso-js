@@ -118,7 +118,7 @@ export default class MaxcsoBin {
           await promisify(fs.chmod)(temporaryBlob, 0o755); // chmod +x
           return temporaryBlob;
         }));
-        return temporaryBlobs.find((temporaryBlob) => path.basename(temporaryBlob).startsWith('maxcso'));
+        return temporaryBlobs.find((temporaryBlob) => path.basename(temporaryBlob).toLowerCase().startsWith('maxcso'));
       }
     } catch { /* ignored */ }
 
